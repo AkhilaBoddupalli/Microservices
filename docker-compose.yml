@@ -1,0 +1,67 @@
+version: "2.1"
+services:
+  eurekaserver:
+    image: eurekaserver
+    build: eurekaserver/
+    container_name: eureka-container
+    restart: always
+    network_mode: host
+    hostname: localhost
+    ports:
+      - 8088:8088
+    healthcheck:
+      test: "exit 0"
+
+  configserver:
+    image: configserver
+    build: configserver/
+    container_name: config-container
+    restart: always
+    network_mode: host
+    hostname: localhost
+    ports:
+      - 8888:8888
+    healthcheck:
+      test: "exit 0"
+
+  apigateway:
+    image: apigateway
+    build: apigateway/
+    container_name: zuul-container
+    restart: always
+    network_mode: host
+    hostname: localhost
+    depends_on:
+      - eurekaserver
+      - muzicx
+    ports:
+      - 8082:8082
+    healthcheck:
+      test: "exit 0"
+
+  mongo:
+    image: mongo
+    container_name: mongo
+    restart: always
+    network_mode: host
+    hostname: localhost
+    ports:
+      - 27017:27017
+    healthcheck:
+      test: "exit 0"
+
+  muzicx:
+    image: muzicx
+    build: muzicx/
+    container_name: muzicx-container
+    restart: always
+    network_mode: host
+    hostname: localhost
+    depends_on:
+      - eurekaserver
+      - configserver
+      - mongo
+    ports:
+      - 8080:8080
+    healthcheck:
+      test: "exit 0"
